@@ -1,10 +1,18 @@
 #CSV library imported to help with file handling methods
 import csv
 
+#datetime module to help with date objects
+import datetime
+
 #initalize main lists
 students = []
 courses = []
 enrolments = []
+
+#initialize list fieldnames (to identify data columns)
+student_fields = ['studentid', 'name', 'contact']
+course_fields = ['courseid', 'name', 'seats']
+enrolment_fields = ['studentid', 'courseid', 'dateofenrolment']
 
 #Function to display the main user interface
 def showMain():
@@ -50,72 +58,153 @@ def showMain():
 
 #Function to register a new student
 def addStudent():
-    print("You are registering a new student to the system.")
+    #Initalize a list to store the new student's details
+    newStudent = []
+    print("You are registering a new student to the system. If you wish to return to the main interface, press the Enter key on any input prompt")
+    
     # Taking in student details
     while True:
         student_ID = input("Fill in student ID:")
 
         if student_ID == "": #cancel action
-            print("Returned")
+            print("Returning")
             return
         
         #Validation
         if not checkStudentReg(student_ID): #check whether student ID already exists (ensure no duplicates)
-            #if student ID not found,
+            #if student ID not found, add student ID to list and break the loop
+            newStudent.append(student_ID)
             break
         else: #if student ID found, print error message
-            print("The student ID that you entered is already registered in the system database! Please register with another ID.")
-            """
-    student_name = input("Fill in student's name:")
-    student_contact = input("Fill in student's contact:")
-    # Display student details before storing in the text file students.txt
-    print(f'Student ID: {student_ID}\nStudent Name: {student_name}\nStudent Contact: {student_contact}')"""
+            print("The student ID that you entered is already registered! Please register with another ID.")
+
+    while True:
+        student_name = input("Fill in student's name:")
+
+        if student_name == "": #cancel action
+            print("Returning")
+            return
+
+        #Validation
+        if not student_name.isalpha(): #check whether student name contains any characters outside the alphabet
+            #if yes, print error message
+            print("Error: Name cannot contain any numbers or symbols! Name should only contain letters from the alphabets.")
+        else:
+            #if no, add name to list and break the loop
+            newStudent.append(student_name)
+            break
+            
+    while True:
+        student_contact = input("Fill in student's contact:")
+        
+        if student_contact == "": #cancel action
+            print("Returning")
+            return
+
+        if not student_contact.isdigit(): #check whether contact number contains any characters except the numbers
+            #if yes, print error message
+            print("Error: Contact number cannot contain any letters or symbols! Only numbers are allowed")
+        else:
+            #if no, add contact number to list and break the loop
+            newStudent.append(student_contact)
+            break
+    
+    # Display student details
+    print(f'Student ID: {student_ID}\nStudent Name: {student_name}\nStudent Contact: {student_contact}')
+
+    #Confirmation
+    response = input("Confirm student registration? (Y - yes/Any key - cancel)").capitalize()
+
+    if response == 'Y': #if confirmed
+        #The expression below is called dictionary comprehension
+        #The student fieldnames and the new student details are combined into a dictionary as key:value pairs
+        toDict = {key:value for (key,value) in zip(student_fields, newStudent)}
+
+        #Then, the new student is added to the student list
+        students.append(toDict)
+        print("Student registration successful!") #print message
+    else: #if cancelled
+        print("Student registration cancelled! Returning to main interface") #print message
+        return
     
 
 #Function to add a new course
 def addCourse():
-    print("You are adding a new course.")
+    #Initalize a list to store the new course details
+    newCourse = []
+    print("You are adding a new course. If you wish to return to the main interface, press the Enter key on any input prompt. (Works only for string inputs)")
+    
     # Taking in course details
     while True:
         course_ID = input("Fill in the course ID:")
 
         if course_ID == "": #cancel action
-            print("Returned")
+            print("Returning")
             return
         
         #Validation
         if not checkCourseReg(course_ID): #check whether course ID already exists (ensure no duplicates)
-            #if course ID not found,
+            #if course ID not found, add course ID to list and break the loop
+            newCourse.append(course_ID)
             break
         else: #if course ID found, print error message
-            print("Error: The course ID that you entered is already registered in the system database! Please register with another ID.")
-            """
+            print("Error: The course ID that you entered is already registered! Please fill in another ID.")
+            
     course_name = input("Fill in the name of the course:")
+    if course_name == "": #cancel action
+        print("Returning")
+        return
+    
+    #add course name to list
+    newCourse.append(course_name)
+    
     while True: # Keep looping until an integer is entered
         try:
             course_seats = int(input("Fill in the maximum seats required for this course:"))
+
+            #add course capacity to list
+            newCourse.append(course_seats)
             break # Exit the loop once the input is an integer.
         except ValueError:
             print("Error: Invalid input. Please enter an integer.") # Error message for non-integer values
-    # Display course details before storing in the text file courses.txt
-    print(f'Course ID: {course_ID}\nCourse Name: {course_name}\nMaximum seats: {course_seats}')"""
 
-    
+    # Display course details
+    print(f'Course ID: {course_ID}\nCourse Name: {course_name}\nMaximum seats: {course_seats}')
+
+    #Confirmation
+    response = input("Confirm course registration? (Y - yes/Any key - cancel)").capitalize()
+
+    if response == 'Y': #if confirmed
+        #The expression below is called dictionary comprehension
+        #The course fieldnames and the new course details are combined into a dictionary as key:value pairs
+        toDict = {key:value for (key,value) in zip(course_fields, newCourse)}
+
+        #Then, added new course to the course list
+        courses.append(toDict)
+        print("Course registration successful!") #print message
+    else: #if cancelled
+        print("Course registration cancelled! Returning to main interface") #print message
+        return
+
+
 #Function to enroll student into a course
 def enrollCourse():
-    print("You are enroling a student into a course.")
+    #Initalize a list to store the enrolment details
+    newEnrolment = []
+    print("You are enroling a student into a course. If you wish to return to the main interface, press the Enter key on any input prompt.")
     student_enroll = ""
     while True:
         #Selecting student to enroll
         student_enroll = input("Fill in student ID:")
 
         if student_enroll == "": #cancel action
-            print("Returned")
+            print("Returning")
             return
 
         # Validation
         if checkStudentReg(student_enroll): #check whether student ID is registered
-            #if registered, break the loop
+            #if registered, add the student's ID to the list and break the loop
+            newEnrolment.append(student_enroll)
             break
         else: #if not registered, an option to register a new student is given or else the loop restarts
             print("Error: The student ID you entered is not valid!")
@@ -133,34 +222,75 @@ def enrollCourse():
         course_enroll = input("Fill in the course ID:")
 
         if course_enroll == "": #cancel action
-            print("Returned")
+            print("Returning")
             return
         
         # Validation
         if checkCourseReg(course_enroll): #check whether course ID is registered
-            if checkStudentEnrolled(student_enroll, course_enroll): #check whether student ID is already enrolled into the course
+            if not checkStudentEnrolled(student_enroll, course_enroll): #check whether student ID is already enrolled into the course
+                if getNumberOfSeats(course_enroll) <= 0: #check whether course still has capacity for an enrolment
+                    #if no seats left, print error message
+                    print("Error: The course has no more available seats left! Please try again later or choose another course.")
+                else: #if there are seats available, add the course ID to the list and break the loop
+                    newEnrolment.append(course_enroll)
+                    break
+            else:
                 #if already enrolled into the course, print error message
                 print("Error: The student ID you entered is already enrolled in the course! Please choose another course.")
-            else: #if not enrolled into the course yet, break loop
-                break
         else: #if not registered, print error message
             print("Error: The course ID you entered is not valid! Please try again.")
-    """
-    #Update number of seats
-    course_seats -= 1
-    print(f'You have successfully enrolled in {course_enrol}')"""
 
-    
+    #Confirmation
+    response = input(f"Confirm enrolment into Course {course_enroll}? (Y - yes/Any key - cancel)").capitalize()
+
+    if response == 'Y': #if confirmed
+        #Update number of seats
+        updateCourseSeats(course_enroll, -1) #the -1 is the increment/decrement value
+
+        #Record date of enrolment
+        currentDate = str(datetime.date.today()) #get current date through datetime object
+        newEnrolment.append(currentDate) #add the current date to the list
+        
+        #The expression below is called dictionary comprehension
+        #The course fieldnames and the new course details are combined into a dictionary as key:value pairs
+        toDict = {key:value for (key,value) in zip(enrolment_fields, newEnrolment)}
+
+        #Then, added new course to the course list
+        enrolments.append(toDict)
+        print(f'Student successfully enrolled in Course {course_enroll}') #print message
+    else: #if cancelled
+        print("Course enrolment cancelled! Returning to main interface") #print message
+        return
+
+
+#Function to update the course capacity
+def updateCourseSeats(course_ID, increment):
+    for course in courses:
+        if course['courseid'] == course_ID:
+            course['seats']+=increment
+
+
+#Function to get the course capacity
+def getNumberOfSeats(course_ID):
+    for course in courses: #finding the course
+        if course['courseid'] == course_ID: #if course is found in the list
+            return course['seats'] #return the course capacity
+
+    #if course is not found
+    return 0
+
+
 #Function to drop a student from enrolling a course
 def dropCourse():
-    print("You are dropping a student from being enrolled in the course.")
-    student_drop = ""
+    print("You are dropping a student from being enrolled in the course. If you wish to return to the main interface, press the Enter key on any input prompt.")
+    
+    # Identifying the student
     while True:
         #Selecting student to drop
         student_drop = input("Fill in student ID:")
 
         if student_drop == "": #cancel action
-            print("Returned")
+            print("Returning")
             return
         
         # Validation
@@ -175,7 +305,7 @@ def dropCourse():
         course_drop = input("Fill in the course ID:")
 
         if course_drop == "": #cancel action
-            print("Returned")
+            print("Returning")
             return
 
         # Validation
@@ -183,20 +313,32 @@ def dropCourse():
             if not checkStudentEnrolled(student_drop, course_drop): #check whether student ID is enrolled into the course
                 #if not enrolled into the course, print error message
                 print("Error: The student ID you entered is not enrolled in the course! Please choose another course.")
-            else: #if enrolled into the course yet, break loop
+            else: #if enrolled into the course, break loop
                 break
         else: #if not registered, print error message
             print("Error: The course ID you entered is not valid! Please try again.")
-"""
-    #Update number of seats
-    course_seats += 1
-    print(f'You have successfully dropped {course_drop}')"""
+            
+    #Find enrolment index in the main enrolment list
+    index = 0 #to locate the desired enrolment record
+    for enrolment in enrolments:
+        if student_drop == enrolment['studentid'] and course_drop == enrolment['courseid']: #if the enrolment has the same student ID and course ID
+            updateCourseSeats(course_drop, 1) #when course is dropped, a seat is freed up
+            #break the loop
+            break
+        else: #if not
+            #increment the index
+            index+=1
 
+    #Delete course enrolment record from the list
+    droppedRow = enrolments.pop(index) #store deleted enrolment record
+    print(f"Student successfully dropped Course {droppedRow['courseid']}") #print message
 
+    
 #Function to view all courses
 def viewCourses():
     return 0
 
+        
 #Function to view all student info
 def viewStudents():
     return 0
@@ -247,8 +389,7 @@ def retrieveStudents():
         print("Warning: students.csv not found! New file created.") #print error message
 
         with open('students.csv', 'w') as student_file: #open file in write mode (to create a new file)
-            fieldnames = ['studentid', 'name', 'contact'] #fieldnames to identify columns
-            csv_writer = csv.DictWriter(student_file, fieldnames=fieldnames) #initalize CSV writer object, pass in student file and fieldnames
+            csv_writer = csv.DictWriter(student_file, fieldnames=student_fields) #initalize CSV writer object, pass in student file and fieldnames
 
             csv_writer.writeheader() #write fieldnames into file as headers
             
@@ -273,8 +414,7 @@ def retrieveCourses():
         print("Warning: courses.csv not found! New file created.") #print error message
 
         with open('courses.csv', 'w') as course_file: #open file in write mode
-            fieldnames = ['courseid', 'name', 'seats'] #fieldnames to identify columns
-            csv_writer = csv.DictWriter(course_file, fieldnames=fieldnames) #initialize CSV writer object, pass in course file and fieldnames
+            csv_writer = csv.DictWriter(course_file, fieldnames=course_fields) #initialize CSV writer object, pass in course file and fieldnames
 
             csv_writer.writeheader() #write fieldnames into file as headers
             
@@ -312,8 +452,7 @@ def saveData():
     #PART 1: Saving student records
     try: #write students.csv
         with open('students.csv', 'w') as student_file: #open file in write mode 
-            fieldnames = ['studentid', 'name', 'contact'] #fieldnames to identify columns
-            csv_writer = csv.DictWriter(student_file, fieldnames=fieldnames) #initalize CSV writer object, pass in student file and fieldnames
+            csv_writer = csv.DictWriter(student_file, fieldnames=student_fields) #initalize CSV writer object, pass in student file and fieldnames
 
             csv_writer.writeheader() #write fieldnames into file as headers
             for row in students:
@@ -327,9 +466,8 @@ def saveData():
 
     #PART 2: Saving course records
     try: #write courses.csv
-        with open('courses.csv', 'w') as course_file: #open file in write mode 
-            fieldnames = ['courseid', 'name', 'seats'] #fieldnames to identify columns
-            csv_writer = csv.DictWriter(course_file, fieldnames=fieldnames) #initalize CSV writer object, pass in course file and fieldnames
+        with open('courses.csv', 'w') as course_file: #open file in write mode
+            csv_writer = csv.DictWriter(course_file, fieldnames=course_fields) #initalize CSV writer object, pass in course file and fieldnames
 
             csv_writer.writeheader() #write fieldnames into file as headers
             for row in courses:
@@ -344,8 +482,7 @@ def saveData():
     #PART 3: Saving course enrolment records
     try: #write enrolments.csv
         with open('enrolments.csv', 'w') as enrolment_file: #open file in write mode 
-            fieldnames = ['studentid', 'courseid', 'dateofenrolment'] #fieldnames to identify columns
-            csv_writer = csv.DictWriter(enrolment_file, fieldnames=fieldnames) #initalize CSV writer object, pass in enrolment file and fieldnames
+            csv_writer = csv.DictWriter(enrolment_file, fieldnames=enrolment_fields) #initalize CSV writer object, pass in enrolment file and fieldnames
 
             csv_writer.writeheader() #write fieldnames into file as headers
             for row in enrolments:
