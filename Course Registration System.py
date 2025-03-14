@@ -55,17 +55,21 @@ def addStudent():
     while True:
         student_ID = input("Fill in student ID:")
 
+        if student_ID == "": #cancel action
+            print("Returned")
+            return
+        
         #Validation
         if not checkStudentReg(student_ID): #check whether student ID already exists (ensure no duplicates)
             #if student ID not found,
             break
         else: #if student ID found, print error message
             print("The student ID that you entered is already registered in the system database! Please register with another ID.")
-            
+            """
     student_name = input("Fill in student's name:")
     student_contact = input("Fill in student's contact:")
     # Display student details before storing in the text file students.txt
-    print(f'Student ID: {student_ID}\nStudent Name: {student_name}\nStudent Contact: {student_contact}')
+    print(f'Student ID: {student_ID}\nStudent Name: {student_name}\nStudent Contact: {student_contact}')"""
     
 
 #Function to add a new course
@@ -75,12 +79,17 @@ def addCourse():
     while True:
         course_ID = input("Fill in the course ID:")
 
+        if course_ID == "": #cancel action
+            print("Returned")
+            return
+        
         #Validation
         if not checkCourseReg(course_ID): #check whether course ID already exists (ensure no duplicates)
             #if course ID not found,
             break
         else: #if course ID found, print error message
             print("Error: The course ID that you entered is already registered in the system database! Please register with another ID.")
+            """
     course_name = input("Fill in the name of the course:")
     while True: # Keep looping until an integer is entered
         try:
@@ -89,7 +98,7 @@ def addCourse():
         except ValueError:
             print("Error: Invalid input. Please enter an integer.") # Error message for non-integer values
     # Display course details before storing in the text file courses.txt
-    print(f'Course ID: {course_ID}\nCourse Name: {course_name}\nMaximum seats: {course_seats}')
+    print(f'Course ID: {course_ID}\nCourse Name: {course_name}\nMaximum seats: {course_seats}')"""
 
     
 #Function to enroll student into a course
@@ -99,6 +108,10 @@ def enrollCourse():
     while True:
         #Selecting student to enroll
         student_enroll = input("Fill in student ID:")
+
+        if student_enroll == "": #cancel action
+            print("Returned")
+            return
 
         # Validation
         if checkStudentReg(student_enroll): #check whether student ID is registered
@@ -118,6 +131,10 @@ def enrollCourse():
     # Identifying the course that the student is enrolling in
     while True:
         course_enroll = input("Fill in the course ID:")
+
+        if course_enroll == "": #cancel action
+            print("Returned")
+            return
         
         # Validation
         if checkCourseReg(course_enroll): #check whether course ID is registered
@@ -127,11 +144,11 @@ def enrollCourse():
             else: #if not enrolled into the course yet, break loop
                 break
         else: #if not registered, print error message
-            print("Error: The student ID you entered is not valid! Please try again.")
-
+            print("Error: The course ID you entered is not valid! Please try again.")
+    """
     #Update number of seats
     course_seats -= 1
-    print(f'You have successfully enrolled in {course_enrol}')
+    print(f'You have successfully enrolled in {course_enrol}')"""
 
     
 #Function to drop a student from enrolling a course
@@ -142,6 +159,10 @@ def dropCourse():
         #Selecting student to drop
         student_drop = input("Fill in student ID:")
 
+        if student_drop == "": #cancel action
+            print("Returned")
+            return
+        
         # Validation
         if checkStudentReg(student_drop): #check whether student ID is registered
             #if registered, break the loop
@@ -153,62 +174,63 @@ def dropCourse():
     while True:
         course_drop = input("Fill in the course ID:")
 
+        if course_drop == "": #cancel action
+            print("Returned")
+            return
+
         # Validation
-        if checkCourseReg(course_enroll): #check whether course ID is registered
-            if not checkStudentEnrolled(student_enroll, course_enroll): #check whether student ID is enrolled into the course
+        if checkCourseReg(course_drop): #check whether course ID is registered
+            if not checkStudentEnrolled(student_drop, course_drop): #check whether student ID is enrolled into the course
                 #if not enrolled into the course, print error message
-                print("Error: The student ID you entered is not enrolled in the course!")
+                print("Error: The student ID you entered is not enrolled in the course! Please choose another course.")
             else: #if enrolled into the course yet, break loop
                 break
         else: #if not registered, print error message
-            print("Error: The student ID you entered is not valid! Please try again.")
-
+            print("Error: The course ID you entered is not valid! Please try again.")
+"""
     #Update number of seats
     course_seats += 1
-    print(f'You have successfully dropped {course_drop}')
+    print(f'You have successfully dropped {course_drop}')"""
 
-    
+
 #Function to view all courses
 def viewCourses():
-    print("You are viewing all the available courses.")
-    # Searching for the course in the text file courses.txt
-    while course_ID == True:
-    # Display all available courses and their details
-        print(f'Course ID: {course_ID}\nCourse Name: {course_name}\nRemaining seats: {course_seats}')
+    return 0
 
-        
 #Function to view all student info
 def viewStudents():
-    print("You are viewing all of the students' information.")
-    # Searching for the course in the text file courses.txt
-    while student_ID == True:
-    # Display all available courses and their details
-        print(f'Student ID: {student_ID}\nCourse Name: {student_name}\nStudent Contact: {student_contact}')
+    return 0
 
         
 #Function to verify student is registered
 def checkStudentReg(student_ID):
-    #check whether student id exists in student list
-    #if student_id exists
-    return True
-    #if student_id does not exist
-    #return False
+    #check whether student ID exists in student list
+    for student in students:
+        if student_ID == student['studentid']: #if student ID exists
+            return True
+    
+    #if student ID does not exist
+    return False
 
 #Function to verify course is registered
 def checkCourseReg(course_ID):
     #check whether course ID exists in course list
-    #if course ID exists
-    return True
+    for course in courses:
+        if course_ID == course['courseid']: #if course ID exists
+            return True
+        
     #if course ID does not exist
-    #return False
+    return False
 
 #Function to verify student is enrolled into a course
 def checkStudentEnrolled(student_ID, course_ID):
-    #check whether student ID exists in enrollment list
-    #if student ID exists
-    return True
-    #if student ID does not exist
-    #return False
+    #check whether student ID is enrolled in the course in enrollment list
+    for enrolment in enrolments:
+        if student_ID == enrolment['studentid'] and course_ID == enrolment['courseid']: #if student is enrolled into the course
+            return True
+        
+    #if student is not enrolled into the course
+    return False
 
 #Function to retrieve student info from file and store into a list
 def retrieveStudents():
