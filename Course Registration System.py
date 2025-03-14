@@ -86,7 +86,7 @@ def addStudent():
             return
 
         #Validation
-        if not student_name.isalpha(): #check whether student name contains any characters outside the alphabet
+        if student_name.isalnum() or student_name.isdigit(): #check whether student name contains any characters outside the alphabet
             #if yes, print error message
             print("Error: Name cannot contain any numbers or symbols! Name should only contain letters from the alphabets.")
         else:
