@@ -1,5 +1,10 @@
 #CSV library imported to help with file handling methods
-#import csv
+import csv
+
+#initalize main lists
+students = []
+courses = []
+enrolments = []
 
 #Function to display the main user interface
 def showMain():
@@ -51,7 +56,7 @@ def addStudent():
         student_ID = input("Fill in student ID:")
 
         #Validation
-        if !checkStudentReg(student_ID): #check whether student ID already exists (ensure no duplicates)
+        if not checkStudentReg(student_ID): #check whether student ID already exists (ensure no duplicates)
             #if student ID not found,
             break
         else: #if student ID found, print error message
@@ -71,7 +76,7 @@ def addCourse():
         course_ID = input("Fill in the course ID:")
 
         #Validation
-        if !checkCourseReg(course_ID): #check whether course ID already exists (ensure no duplicates)
+        if not checkCourseReg(course_ID): #check whether course ID already exists (ensure no duplicates)
             #if course ID not found,
             break
         else: #if course ID found, print error message
@@ -118,7 +123,7 @@ def enrollCourse():
         if checkCourseReg(course_enroll): #check whether course ID is registered
             if checkStudentEnrolled(student_enroll, course_enroll): #check whether student ID is already enrolled into the course
                 #if already enrolled into the course, print error message
-                print("Error: The student ID you entered is already enrolled in the course! Please choose another course.)
+                print("Error: The student ID you entered is already enrolled in the course! Please choose another course.")
             else: #if not enrolled into the course yet, break loop
                 break
         else: #if not registered, print error message
@@ -150,9 +155,9 @@ def dropCourse():
 
         # Validation
         if checkCourseReg(course_enroll): #check whether course ID is registered
-            if !checkStudentEnrolled(student_enroll, course_enroll): #check whether student ID is enrolled into the course
+            if not checkStudentEnrolled(student_enroll, course_enroll): #check whether student ID is enrolled into the course
                 #if not enrolled into the course, print error message
-                print("Error: The student ID you entered is not enrolled in the course!)
+                print("Error: The student ID you entered is not enrolled in the course!")
             else: #if enrolled into the course yet, break loop
                 break
         else: #if not registered, print error message
@@ -198,7 +203,7 @@ def checkCourseReg(course_ID):
     #return False
 
 #Function to verify student is enrolled into a course
-def checkStudentEnrolled(student_ID, course_ID)):
+def checkStudentEnrolled(student_ID, course_ID):
     #check whether student ID exists in enrollment list
     #if student ID exists
     return True
@@ -207,17 +212,133 @@ def checkStudentEnrolled(student_ID, course_ID)):
 
 #Function to retrieve student info from file and store into a list
 def retrieveStudents():
-    return ""
+    row_count = 0 #number of rows read
+    try: #read students.csv
+        with open('students.csv') as student_file: #open file in read mode (default)
+            csv_reader = csv.DictReader(student_file) #initalize CSV reader object, pass in student file to be read
+            for row in csv_reader:
+                #object returns a collection, store each row into the main student list
+                students.append(row)
+                row_count+=1 #update counter
+
+    except FileNotFoundError: #if students.csv does not exist
+        print("Warning: students.csv not found! New file created.") #print error message
+
+        with open('students.csv', 'w') as student_file: #open file in write mode (to create a new file)
+            fieldnames = ['studentid', 'name', 'contact'] #fieldnames to identify columns
+            csv_writer = csv.DictWriter(student_file, fieldnames=fieldnames) #initalize CSV writer object, pass in student file and fieldnames
+
+            csv_writer.writeheader() #write fieldnames into file as headers
+            
+    else: #if no errors occur
+        print(f"{row_count} student rows processed and retrieved.") #print message to display completion of data retrieval
+        
+        
 #Function to retrieve course info from file and store into a list
 def retrieveCourses():
-    return ""
+    row_count = 0 #number of rows read
+    try: #read courses.csv
+        with open('courses.csv') as course_file: #open file in read mode
+            csv_reader = csv.DictReader(course_file) #initialize CSV reader object, pass in course file to be read
+            for row in csv_reader:
+                row['seats'] = int(row['seats']) #convert the field 'seats' into integer
+                
+                #object returns a collection, store each row into the main course list
+                courses.append(row)
+                row_count+=1 #update counter
+                
+    except FileNotFoundError: #if courses.csv does not exist
+        print("Warning: courses.csv not found! New file created.") #print error message
+
+        with open('courses.csv', 'w') as course_file: #open file in write mode
+            fieldnames = ['courseid', 'name', 'seats'] #fieldnames to identify columns
+            csv_writer = csv.DictWriter(course_file, fieldnames=fieldnames) #initialize CSV writer object, pass in course file and fieldnames
+
+            csv_writer.writeheader() #write fieldnames into file as headers
+            
+    else: #if no errors occur
+        print(f"{row_count} course rows processed and retrieved.") #print message to display completion of data retrieval
+        
+
+
 #Function to retrieve course enrolment info from file and store into a list
 def retrieveEnrols():
-    return ""
-#Function to overwrite new data into respective file
+    row_count = 0 #number of rows read
+    try: #read enrolments.csv
+        with open('enrolments.csv') as enrolment_file: #open file in read mode
+            csv_reader = csv.DictReader(enrolment_file) #initialize CSV reader object, pass in enrolment file to read
+            for row in csv_reader:
+                #object reutnrs a collection, store each row into the main course list
+                enrolments.append(row)
+                row_count+=1 #update counter
+                
+    except FileNotFoundError: #if enrolments.csv does not exist
+        print("Warning: enrolments.csv not found! New file created.") #print error message
+
+        with open('enrolments.csv', 'w') as enrolment_file: #open file in write mode
+            fieldnames = ['studentid', 'courseid', 'dateofenrolment'] #fieldnames to identify columns
+            csv_writer = csv.DictWriter(enrolment_file, fieldnames=fieldnames) #initialize CSV writer object, pass in enrolment file and fieldnames
+
+            csv_writer.writeheader() #write fieldnames into file as headers
+
+    else: #if no errors occur
+        print(f"{row_count} enrolment rows processed and retrieved.") #print message to display completion of data retrieval
+
+        
+#Function to overwrite new data into respective files
 def saveData():
-    return ""
+    #PART 1: Saving student records
+    try: #write students.csv
+        with open('students.csv', 'w') as student_file: #open file in write mode 
+            fieldnames = ['studentid', 'name', 'contact'] #fieldnames to identify columns
+            csv_writer = csv.DictWriter(student_file, fieldnames=fieldnames) #initalize CSV writer object, pass in student file and fieldnames
+
+            csv_writer.writeheader() #write fieldnames into file as headers
+            for row in students:
+                csv_writer.writerow(row) #store each row into students.csv
+
+    except: #if an error occurs
+        print("Unexpected Error: Data saved unsuccessfully! Please try again.") #print error message, abort
+
+    else: #if no errors occur
+        print(f"{len(students)} student records saved successfully!") #print message to display completion of data persistence
+
+    #PART 2: Saving course records
+    try: #write courses.csv
+        with open('courses.csv', 'w') as course_file: #open file in write mode 
+            fieldnames = ['courseid', 'name', 'seats'] #fieldnames to identify columns
+            csv_writer = csv.DictWriter(course_file, fieldnames=fieldnames) #initalize CSV writer object, pass in course file and fieldnames
+
+            csv_writer.writeheader() #write fieldnames into file as headers
+            for row in courses:
+                csv_writer.writerow(row) #store each row into courses.csv
+
+    except: #if an error occurs
+        print("Unexpected Error: Data saved unsuccessfully! Please try again.") #print error message, abort
+
+    else: #if no errors occur
+        print(f"{len(courses)} course records saved successfully!") #print message to display completion of data persistence
+
+    #PART 3: Saving course enrolment records
+    try: #write enrolments.csv
+        with open('enrolments.csv', 'w') as enrolment_file: #open file in write mode 
+            fieldnames = ['studentid', 'courseid', 'dateofenrolment'] #fieldnames to identify columns
+            csv_writer = csv.DictWriter(enrolment_file, fieldnames=fieldnames) #initalize CSV writer object, pass in enrolment file and fieldnames
+
+            csv_writer.writeheader() #write fieldnames into file as headers
+            for row in enrolments:
+                csv_writer.writerow(row) #store each row into enrolments.csv
+
+    except: #if an error occurs
+        print("Unexpected Error: Data saved unsuccessfully! Please try again.") #print error message, abort
+
+    else: #if no errors occur
+        print(f"{len(enrolments)} enrolment records saved successfully!") #print message to display completion of data persistence
+        
 
 #MAIN PROGRAM STARTS HERE >
-showMain()
+retrieveStudents() #retrieve students
+retrieveCourses() #retrieve courses
+retrieveEnrols() #retrieve course enrolments
+showMain() #display main interface
 
