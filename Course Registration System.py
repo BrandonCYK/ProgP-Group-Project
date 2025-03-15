@@ -336,13 +336,56 @@ def dropCourse():
     
 #Function to view all courses
 def viewCourses():
-    return 0
+    print("You are viewing all available courses currently registered in the system.") #print message
+    
+    if not courses: #check whether there are any available courses in main course list
+        #if no courses found,
+        print("No courses available.") #print message
+        add_new = input("Do you want to add a new course?\n[Y] Yes\n[Any key] No): ").capitalize() #prompt user to add a course
+        if add_new == 'Y': #if user accepts
+            addCourse() #run the function to the add a course
+        else: #if user declines
+            print("Returning") #return to main interface
+        return
+            
+    else: #if courses exist, display the data headers in an aligned table format
+        print("Building course table....\n|Available Courses:")
+        print("|------------------------------------------------------------|")
+        print(f"|{'Course ID':<10} |{'Course Name':<30} |{'Remaining Seats':<15} |")
+        print("|------------------------------------------------------------|")
+            
+        for course in courses:
+            print(f"|{course['courseid']:<10} |{course['name']:<30} |{course['seats']:<15} |") #display the details of the courses in an aligned table format
+            print("|------------------------------------------------------------|") #provides a blank line after the table
 
-        
+        print(f"\n{len(courses)} records returned.") #print number of records returned
+
+
 #Function to view all student info
 def viewStudents():
-    return 0
+    print("You are viewing all students currently registered in the system.") #print message
+    
+    if not courses: #check whether there are any registered students in main student list
+        #if no students found,
+        print("No students registered.") #print message
+        add_new = input("Do you want to register a student?\n[Y] Yes\n[Any key] No): ").capitalize() #prompt user to register a student
+        if add_new == 'Y': #if user accepts
+            addStudent() #run the function to the register a student
+        else: #if user declines
+            print("Returning") #return to main interface
+        return
+            
+    else: #if students exist, display the data headers in an aligned table format
+        print("Building student table....\n|Registered Students:")
+        print("|------------------------------------------------------------------|")
+        print(f"|{'Student ID':<10} |{'Name':<30} |{'Contact Information':<15}   |")
+        print("|------------------------------------------------------------------|")
+            
+        for student in students:
+            print(f"|{student['studentid']:<10} |{student['name']:<30} |{student['contact']:<15}       |") #display the details of the students in an aligned table format
+            print("|------------------------------------------------------------------|") #provides a blank line after the table
 
+        print(f"\n{len(students)} records returned.") #print number of records returned
         
 #Function to verify student is registered
 def checkStudentReg(student_ID):
